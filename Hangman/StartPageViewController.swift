@@ -25,13 +25,10 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
         super.viewDidLoad()
         startButton.hidden = true;
         self.answerTextField.delegate = self;
-
-        // Do any additional setup after loading the view.
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -39,12 +36,17 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
             
             if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
                 if !answer.isEmpty {
-                    destination.game = Game(answer: answer)
+					do {
+						destination.game = Game(answer: try Game.validateGame(answer))
+					} catch Game.GameError.CharacterIsNotLetter {
+						showAlert(title: "Not a valid word. Try again")
+					} catch let error {
+						fatalError("\(error)")
+					}
+					
                 }
             }
         }
-
-        
     }
     
     func textFieldShouldReturn(answerTextField: UITextField) -> Bool {
@@ -52,15 +54,15 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
         startButton.hidden = false
         return true
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
+	
+	func showAlert(title title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, action:UIAlertAction = UIAlertAction(title: "OK", style: .Default, handler: nil) ) {
+		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+		alert.addAction(action)
+		presentViewController(alert, animated: true, completion: nil)
+	}
+	
+	override func prefersStatusBarHidden() -> Bool {
+		return true;
+	}
 
 }

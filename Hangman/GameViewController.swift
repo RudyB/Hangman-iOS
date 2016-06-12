@@ -9,8 +9,8 @@
 import UIKit
 
 class GameViewController: UIViewController {
-    var game:Game?
-    
+	
+	var game:Game?
 
     @IBOutlet weak var incorrectGuessesTitle: UILabel!
     @IBOutlet weak var guessesRemainingLabel: UILabel!
@@ -24,7 +24,6 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
         updateDisplay();
         if let game = game {
             view.makeToast(message: "Guesses Remaining: " + String(game.getRemainingTries()), duration: HRToastDefaultDuration, position: HRToastPositionTop);
@@ -33,7 +32,6 @@ class GameViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
     }
     
     override func prefersStatusBarHidden() -> Bool {
@@ -41,8 +39,7 @@ class GameViewController: UIViewController {
     }
     
     func updateDisplay() -> () {
-        if let game = self.game {
-            //guessesRemainingLabel.text = String(game.getRemainingTries())
+        if let game = game {
             if game.getMisses() != "" {
                 incorrectGuessesTitle.hidden = false;
             }
@@ -53,45 +50,49 @@ class GameViewController: UIViewController {
         
     }
     
-    func startNewGame() {
+	func startNewGame(sender: UIAlertAction) {
         if let startPage:StartPageViewController = storyboard?.instantiateViewControllerWithIdentifier("startPage") as? StartPageViewController {
             presentViewController(startPage, animated: true, completion: nil)
         }
     }
     
 
-    
-
     func play(guess: String?){
         if let game = game {
             if game.getRemainingTries() > 0 && !game.isSolved() {
-                if let hit = game.applyGuess(guess){
-                    if !hit {
-                        view.makeToast(message: "Guesses Remaining: " + String(game.getRemainingTries()), duration: HRToastDefaultDuration, position: HRToastPositionTop)
-                    }
-                }
+				do {
+					if let hit = try game.applyGuess(guess){
+						if !hit {
+							view.makeToast(message: "Guesses Remaining: " + String(game.getRemainingTries()), duration: HRToastDefaultDuration, position: HRToastPositionTop)
+							}
+					}
+				} catch Game.GameError.LetterAlreadyGuessed(let letter) {
+					showAlert(title: "The letter '\(letter)' has already been guessed")
+				
+				} catch Game.GameError.CharacterIsNotLetter {
+					showAlert(title: "The guess must be a letter")
+				
+				} catch let error {
+					fatalError("\(error)")
+				}
                 updateDisplay();
             }
-            
+            let newGameAction = UIAlertAction(title: "New Game", style: .Default, handler: startNewGame)
+			
             if !game.isSolved() && game.getRemainingTries() <= 0 {
-                let alert = UIAlertController(title: "Sorry!", message: "The word was " + game.getAnswer(), preferredStyle: .ActionSheet)
-                alert.addAction(UIAlertAction(title: "New Game", style: .Default, handler: { (alert: UIAlertAction!) in
-                    self.startNewGame()
-                }));
-                showViewController(alert, sender: self)
-
+				showAlert(title: "Sorry", message: "The word was " + game.getAnswer(), action: newGameAction)
             }
             if game.isSolved(){
-                let alert = UIAlertController(title: "Congradulations!", message: "You won with " + String(game.getRemainingTries()) + " tries remaining.", preferredStyle: .ActionSheet)
-                alert.addAction(UIAlertAction(title: "New Game", style: .Default, handler: { (alert: UIAlertAction!) in
-                    self.startNewGame()
-                }));
-                showViewController(alert, sender: self)
+				showAlert(title: "Congradulations!", message: "You won with " + String(game.getRemainingTries()) + " tries remaining.", action: newGameAction)
             }
-            
         }
-        
     }
-
+	
+	func showAlert(title title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, action:UIAlertAction = UIAlertAction(title: "OK", style: .Default, handler: nil) ) {
+		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+		alert.addAction(action)
+		presentViewController(alert, animated: true, completion: nil)
+	}
+	
 }
 

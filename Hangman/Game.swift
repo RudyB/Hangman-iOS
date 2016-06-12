@@ -13,6 +13,7 @@ class Game {
     var answer:String
     var hits:String
     var misses:String
+	static let validLetters = NSCharacterSet.letterCharacterSet()
     
     init(answer:String){
         self.answer = answer.lowercaseString;
@@ -20,8 +21,8 @@ class Game {
         self.misses = "";
     }
     
-    func applyGuess(guess:String?) -> Bool?{
-        guard let letter = validateGuess(guess) else {
+    func applyGuess(guess:String?) throws -> Bool?{
+        guard let letter = try validateGuess(guess) else {
             return nil
         }
         let isHit = answer.characters.contains(letter)
@@ -32,29 +33,29 @@ class Game {
         }
         return isHit;
     }
-    
-    
-    func validateGuess(guess:String?) -> Character?{
-        
-        let validLetters = NSCharacterSet.letterCharacterSet()
-        
+	
+	static func validateGame(answer: String) throws -> String {
+		for letter in answer.unicodeScalars {
+			if !validLetters.longCharacterIsMember(letter.value) {
+				throw GameError.CharacterIsNotLetter
+			}
+		}
+		return answer.lowercaseString
+	}
+	
+	
+    func validateGuess(guess:String?) throws -> Character?{
         guard let guess = guess, let firstLetter = guess.unicodeScalars.first, let firstCharacter = guess.characters.first else {
             return nil;
         }
-        
-        
-        if (!validLetters.longCharacterIsMember(firstLetter.value)) {
-            return nil;
-            // todo: throw exception
-            // Guess must be a letter
+		
+        if (!Game.validLetters.longCharacterIsMember(firstLetter.value)) {
+            throw GameError.CharacterIsNotLetter
+        } else if (misses.characters.contains(firstCharacter) || hits.characters.contains(firstCharacter)) {
+			throw GameError.LetterAlreadyGuessed(letter: String(firstCharacter))
         }
-        
-        if (self.misses.characters.contains(firstCharacter) || self.hits.characters.contains(firstCharacter)) {
-            return nil;
-            // todo: throw exception
-            // Letter has already been guessed
-        }
-        return firstCharacter;
+		return firstCharacter
+
     }
     
     func getCurrentProgress() -> String {
@@ -94,8 +95,11 @@ class Game {
         return wrongGuesses.uppercaseString;
     }
     
-    
-    
+	// Exceptions
+	
+	enum GameError: ErrorType {
+		case LetterAlreadyGuessed(letter: String)
+		case CharacterIsNotLetter
+	}
+	
 }
-
-
