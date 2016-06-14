@@ -27,8 +27,7 @@
                                 <color key="tintColor" red="0.1764705882" green="0.20392156859999999" blue="0.22352941179999999" alpha="1" colorSpace="calibratedRGB"/>
                                 <state key="normal" title="Start Game"/>
                                 <connections>
-                                    <action selector="startButton:" destination="A2M-Pa-nVN" eventType="touchUpInside" id="QN2-GC-FXH"/>
-                                    <segue destination="BYZ-38-t0r" kind="showDetail" identifier="startGameSegue" id="ES5-bs-uuZ"/>
+                                    <segue destination="BYZ-38-t0r" kind="showDetail" identifier="launchGameSegue" id="ES5-bs-uuZ"/>
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Enter a word" textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Hjq-Nv-AKg">

@@ -12,9 +12,7 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
     
 
     @IBOutlet weak var answerTextField: UITextField!
-    
-    @IBAction func startButton(sender: UIButton) {}
-    
+	
     @IBAction func resignKeyboard(sender: UITextField) {
         sender.resignFirstResponder()
     }
@@ -30,9 +28,13 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
+	
+	override func prefersStatusBarHidden() -> Bool {
+		return true;
+	}
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "startGameSegue" {
+        if segue.identifier == "launchGameSegue" {
             
             if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
                 if !answer.isEmpty {
@@ -45,10 +47,9 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
 					} catch let error {
 						fatalError("\(error)")
 					}
-					
                 }
 				else {
-					showAlert(title: "You must enter a word")
+					showAlert(title: "You must enter a word",message: "Field cannot be left blank")
 				}
             }
         }
@@ -64,10 +65,6 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
 		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
 		alert.addAction(action)
 		presentViewController(alert, animated: true, completion: nil)
-	}
-	
-	override func prefersStatusBarHidden() -> Bool {
-		return true;
 	}
 
 }

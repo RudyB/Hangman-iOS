@@ -78,9 +78,12 @@ class GameViewController: UIViewController {
             let newGameAction = UIAlertAction(title: "New Game", style: .Default, handler: startNewGame)
 			
             if !game.isSolved() && game.getRemainingTries() <= 0 {
+				guessTextField.resignFirstResponder()
 				showAlert(title: "Sorry", message: "The word was " + game.getAnswer(), action: newGameAction)
+				
             }
             if game.isSolved(){
+				guessTextField.resignFirstResponder()
 				showAlert(title: "Congradulations!", message: "You won with " + String(game.getRemainingTries()) + " tries remaining.", action: newGameAction)
             }
         }
