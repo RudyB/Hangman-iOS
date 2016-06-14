@@ -51,9 +51,7 @@ class GameViewController: UIViewController {
     }
     
 	func startNewGame(sender: UIAlertAction) {
-        if let startPage:StartPageViewController = storyboard?.instantiateViewControllerWithIdentifier("startPage") as? StartPageViewController {
-            presentViewController(startPage, animated: true, completion: nil)
-        }
+        dismissViewControllerAnimated(true, completion: nil)
     }
     
 

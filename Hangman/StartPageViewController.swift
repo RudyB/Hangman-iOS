@@ -37,14 +37,19 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
             if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
                 if !answer.isEmpty {
 					do {
-						destination.game = Game(answer: try Game.validateGame(answer))
-					} catch Game.GameError.CharacterIsNotLetter {
+						destination.game = try Game(answer: answer)
+						answerTextField.text = ""
+						startButton.hidden = true
+					} catch Game.GameError.NotAValidWord {
 						showAlert(title: "Not a valid word. Try again")
 					} catch let error {
 						fatalError("\(error)")
 					}
 					
                 }
+				else {
+					showAlert(title: "You must enter a word")
+				}
             }
         }
     }

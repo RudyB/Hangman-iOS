@@ -15,8 +15,8 @@ class Game {
     var misses:String
 	static let validLetters = NSCharacterSet.letterCharacterSet()
     
-    init(answer:String){
-        self.answer = answer.lowercaseString;
+    init(answer:String) throws {
+        self.answer = try Game.validateAnswer(answer);
         self.hits = "";
         self.misses = "";
     }
@@ -34,10 +34,10 @@ class Game {
         return isHit;
     }
 	
-	static func validateGame(answer: String) throws -> String {
+	static func validateAnswer(answer: String) throws -> String {
 		for letter in answer.unicodeScalars {
 			if !validLetters.longCharacterIsMember(letter.value) {
-				throw GameError.CharacterIsNotLetter
+				throw GameError.NotAValidWord
 			}
 		}
 		return answer.lowercaseString
@@ -100,6 +100,7 @@ class Game {
 	enum GameError: ErrorType {
 		case LetterAlreadyGuessed(letter: String)
 		case CharacterIsNotLetter
+		case NotAValidWord
 	}
 	
 }
