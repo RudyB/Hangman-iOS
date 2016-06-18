@@ -25,9 +25,6 @@ class GameViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         updateDisplay();
-        if let game = game {
-            view.makeToast(message: "Guesses Remaining: " + String(game.getRemainingTries()), duration: HRToastDefaultDuration, position: HRToastPositionTop);
-        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -46,6 +43,7 @@ class GameViewController: UIViewController {
             incorrectGuessesLabel.text = game.getMisses();
             currentStatusLabel.text = game.getCurrentProgress();
             guessTextField.text = "";
+			guessesRemainingLabel.text = "\(game.getRemainingTries())"
         }
         
     }
@@ -59,11 +57,7 @@ class GameViewController: UIViewController {
         if let game = game {
             if game.getRemainingTries() > 0 && !game.isSolved() {
 				do {
-					if let hit = try game.applyGuess(guess){
-						if !hit {
-							view.makeToast(message: "Guesses Remaining: " + String(game.getRemainingTries()), duration: HRToastDefaultDuration, position: HRToastPositionTop)
-							}
-					}
+					try game.applyGuess(guess)
 				} catch Game.GameError.LetterAlreadyGuessed(let letter) {
 					showAlert(title: "The letter '\(letter)' has already been guessed")
 				
