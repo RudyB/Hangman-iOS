@@ -13,6 +13,7 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
 
     @IBOutlet weak var answerTextField: UITextField!
 	
+	@IBOutlet weak var difficultyControl: UISegmentedControl!
     @IBAction func resignKeyboard(sender: UITextField) {
         sender.resignFirstResponder()
     }
@@ -22,6 +23,7 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
     override func viewDidLoad() {
         super.viewDidLoad()
         startButton.hidden = true;
+		difficultyControl.hidden = true;
         self.answerTextField.delegate = self;
     }
 
@@ -39,9 +41,14 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
             if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
                 if !answer.isEmpty {
 					do {
-						destination.game = try Game(answer: answer)
+						guard let difficultyControlSegmentTitle = difficultyControl.titleForSegmentAtIndex(difficultyControl.selectedSegmentIndex),
+							let difficulty = Game.Difficulty(rawValue: difficultyControlSegmentTitle) else {
+							fatalError()
+						}
+						destination.game = try Game(answer: answer, difficulty: difficulty)
 						answerTextField.text = ""
 						startButton.hidden = true
+						difficultyControl.hidden = true
 					} catch Game.GameError.NotAValidWord {
 						showAlert(title: "Not a valid word. Try again")
 					} catch let error {
@@ -58,6 +65,7 @@ class StartPageViewController: UIViewController, UITextFieldDelegate{
     func textFieldShouldReturn(answerTextField: UITextField) -> Bool {
         answerTextField.resignFirstResponder()
         startButton.hidden = false
+		difficultyControl.hidden = false
         return true
     }
 	

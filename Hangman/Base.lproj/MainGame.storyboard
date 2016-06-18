@@ -44,6 +44,15 @@
                                     <action selector="resignKeyboard:" destination="A2M-Pa-nVN" eventType="editingDidEndOnExit" id="gSR-xa-HMR"/>
                                 </connections>
                             </textField>
+                            <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="1" translatesAutoresizingMaskIntoConstraints="NO" id="Ncj-j5-WgA">
+                                <rect key="frame" x="111.5" y="595" width="191" height="29"/>
+                                <segments>
+                                    <segment title="Easy"/>
+                                    <segment title="Medium"/>
+                                    <segment title="Hard"/>
+                                </segments>
+                                <color key="tintColor" white="1" alpha="0.77896012930000003" colorSpace="calibratedWhite"/>
+                            </segmentedControl>
                         </subviews>
                         <color key="backgroundColor" red="0.041526845637583895" green="0.48307990771812076" blue="0.80000000000000004" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
@@ -51,12 +60,14 @@
                             <constraint firstItem="jMJ-W0-XGf" firstAttribute="top" secondItem="PgD-Cy-NjY" secondAttribute="bottom" constant="187" id="3y5-Nu-ljU"/>
                             <constraint firstAttribute="trailingMargin" secondItem="PgD-Cy-NjY" secondAttribute="trailing" constant="14" id="5LU-FZ-6N3"/>
                             <constraint firstItem="PgD-Cy-NjY" firstAttribute="top" secondItem="Hjq-Nv-AKg" secondAttribute="bottom" constant="142" id="5bO-wj-Ehd"/>
+                            <constraint firstItem="jMJ-W0-XGf" firstAttribute="top" secondItem="Ncj-j5-WgA" secondAttribute="bottom" constant="45" id="6Qd-Y3-1tQ"/>
                             <constraint firstItem="Hjq-Nv-AKg" firstAttribute="centerX" secondItem="lfH-kP-PqL" secondAttribute="centerX" id="7YT-E5-wSi"/>
                             <constraint firstItem="jMJ-W0-XGf" firstAttribute="top" secondItem="PgD-Cy-NjY" secondAttribute="bottom" constant="286" id="E3e-L0-Pwd"/>
                             <constraint firstItem="Hjq-Nv-AKg" firstAttribute="centerX" secondItem="lfH-kP-PqL" secondAttribute="centerX" id="EZi-Hr-0qR"/>
                             <constraint firstItem="PgD-Cy-NjY" firstAttribute="centerX" secondItem="lfH-kP-PqL" secondAttribute="centerX" constant="7" id="FjQ-GG-BbU"/>
                             <constraint firstItem="PgD-Cy-NjY" firstAttribute="centerX" secondItem="lfH-kP-PqL" secondAttribute="centerX" id="H5a-Aw-Djz"/>
                             <constraint firstAttribute="trailingMargin" secondItem="jMJ-W0-XGf" secondAttribute="trailing" constant="21" id="JDj-DU-wI5"/>
+                            <constraint firstItem="Ncj-j5-WgA" firstAttribute="centerX" secondItem="lfH-kP-PqL" secondAttribute="centerX" id="LmS-po-amZ"/>
                             <constraint firstItem="PgD-Cy-NjY" firstAttribute="leading" secondItem="lfH-kP-PqL" secondAttribute="leadingMargin" constant="28" id="T1M-q1-utN"/>
                             <constraint firstItem="4Gi-aq-o99" firstAttribute="top" secondItem="jMJ-W0-XGf" secondAttribute="bottom" constant="30" id="U3B-Aq-BQT"/>
                             <constraint firstItem="4Gi-aq-o99" firstAttribute="top" secondItem="jMJ-W0-XGf" secondAttribute="bottom" constant="27" id="Vnk-zp-hTl"/>
@@ -107,6 +118,7 @@
                     <simulatedScreenMetrics key="simulatedDestinationMetrics" type="retina55"/>
                     <connections>
                         <outlet property="answerTextField" destination="PgD-Cy-NjY" id="UJz-T2-aDd"/>
+                        <outlet property="difficultyControl" destination="Ncj-j5-WgA" id="v9Z-Q7-DKe"/>
                         <outlet property="startButton" destination="jMJ-W0-XGf" id="wJ4-Is-kUw"/>
                     </connections>
                 </viewController>

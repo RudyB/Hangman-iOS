@@ -9,16 +9,17 @@
 import Foundation
 
 class Game {
-    let MAX_MISSES = 6
+	var maxMisses:Int
     var answer:String
     var hits:String
     var misses:String
 	static let validLetters = NSCharacterSet.letterCharacterSet()
     
-    init(answer:String) throws {
+	init(answer:String, difficulty:Difficulty) throws {
         self.answer = try Game.validateAnswer(answer);
         self.hits = "";
         self.misses = "";
+		self.maxMisses = difficulty.guesses()
     }
     
     func applyGuess(guess:String?) throws -> Bool?{
@@ -76,12 +77,12 @@ class Game {
     }
     
     func getRemainingTries() -> Int {
-        return MAX_MISSES - misses.characters.count;
+        return maxMisses - misses.characters.count;
     }
     
     func getAnswer() -> String {
         var finalAnswer = "Game is not over yet";
-        if (isSolved() || misses.characters.count >= MAX_MISSES) {
+        if (isSolved() || misses.characters.count >= maxMisses) {
             finalAnswer = answer;
         }
         return finalAnswer;
@@ -103,4 +104,21 @@ class Game {
 		case NotAValidWord
 	}
 	
+	// Difficulty
+	enum Difficulty: String {
+		case Easy
+		case Medium
+		case Hard
+		
+		func guesses() -> Int {
+			switch self {
+			case .Easy:
+				return 10
+			case .Medium:
+				return 8
+			case .Hard:
+				return 6
+			}
+		}
+	}
 }
