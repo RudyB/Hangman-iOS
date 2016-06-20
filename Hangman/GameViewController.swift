@@ -10,23 +10,44 @@ import UIKit
 
 class GameViewController: UIViewController {
 	
+	// MARK: - Class Variables
 	var game:Game?
 
+	// MARK: - IB Outlets/Actions
     @IBOutlet weak var incorrectGuessesTitle: UILabel!
+	@IBOutlet weak var incorrectGuessesLabel: UILabel!
+	@IBOutlet weak var guessesRemainingTitle: UILabel!
     @IBOutlet weak var guessesRemainingLabel: UILabel!
-    @IBOutlet weak var incorrectGuessesLabel: UILabel!
     @IBOutlet weak var currentStatusLabel: UILabel!
     @IBOutlet weak var guessTextField: UITextField!
+	@IBOutlet weak var hintLabel: UILabel!
+	@IBOutlet weak var hintButton: UIButton!
     
     @IBAction func guessTextFieldAction() {
         play(guessTextField.text)
     }
+	
+	@IBAction func hintButtonAction() {
+		hintLabel.hidden = false;
+		NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(self.hideHint), userInfo: nil, repeats: false)
+	}
 
+	func hideHint(){
+		hintLabel.hidden = true
+	}
+
+	// MARK: - Default Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateDisplay();
     }
-
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		navigationController?.setNavigationBarHidden(true, animated: animated)
+		initializeView()
+		
+	}
+	
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
     }
@@ -34,9 +55,23 @@ class GameViewController: UIViewController {
     override func prefersStatusBarHidden() -> Bool {
         return true;
     }
-    
+	
+	// MARK: - Class Methods
+	
+	func initializeView() {
+		hintLabel.hidden = true
+		currentStatusLabel.text = "Loading Word"
+		incorrectGuessesLabel.text = ""
+		guessesRemainingLabel.text = ""
+		guessTextField.enabled = false
+		guessesRemainingTitle.hidden = true
+		updateDisplay()
+	}
+	
     func updateDisplay() -> () {
         if let game = game {
+			guessTextField.enabled = true
+			guessesRemainingTitle.hidden = false
             if game.getMisses() != "" {
                 incorrectGuessesTitle.hidden = false;
             }
@@ -49,20 +84,30 @@ class GameViewController: UIViewController {
     }
     
 	func startNewGame(sender: UIAlertAction) {
-        dismissViewControllerAnimated(true, completion: nil)
+        navigationController?.popToRootViewControllerAnimated(true)
     }
-    
-
+	
+	func getDictionaryDefinition() {
+		if let game = game {
+			WordAPI.getDictionaryDefinition(wordToSearch: game.answer, completionHandler: {
+				definition in
+				dispatch_async(dispatch_get_main_queue()) {
+					self.hintLabel.text = definition
+				}
+			})
+		}
+	}
+	
     func play(guess: String?){
         if let game = game {
             if game.getRemainingTries() > 0 && !game.isSolved() {
 				do {
 					try game.applyGuess(guess)
 				} catch Game.GameError.LetterAlreadyGuessed(let letter) {
-					showAlert(title: "The letter '\(letter)' has already been guessed")
+					Game.showAlert(targetClass: self, title: "The letter '\(letter)' has already been guessed")
 				
 				} catch Game.GameError.CharacterIsNotLetter {
-					showAlert(title: "The guess must be a letter")
+					Game.showAlert(targetClass: self, title: "The guess must be a letter")
 				
 				} catch let error {
 					fatalError("\(error)")
@@ -73,21 +118,17 @@ class GameViewController: UIViewController {
 			
             if !game.isSolved() && game.getRemainingTries() <= 0 {
 				guessTextField.resignFirstResponder()
-				showAlert(title: "Sorry", message: "The word was " + game.getAnswer(), action: newGameAction)
+				Game.showAlert(targetClass: self, title: "Sorry", message: "The word was " + game.getAnswer(), actionList: [newGameAction])
 				
             }
             if game.isSolved(){
 				guessTextField.resignFirstResponder()
-				showAlert(title: "Congradulations!", message: "You won with " + String(game.getRemainingTries()) + " tries remaining.", action: newGameAction)
+				Game.showAlert(targetClass: self,title: "Congradulations!", message: "You won with " + String(game.getRemainingTries()) + " tries remaining.", actionList: [newGameAction])
             }
         }
     }
 	
-	func showAlert(title title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, action:UIAlertAction = UIAlertAction(title: "OK", style: .Default, handler: nil) ) {
-		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
-		alert.addAction(action)
-		presentViewController(alert, animated: true, completion: nil)
-	}
+	
 	
 }
 

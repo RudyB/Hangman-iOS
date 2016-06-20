@@ -2,77 +2,106 @@
 //  StartPageViewController.swift
 //  Hangman
 //
-//  Created by Rudy Bermudez on 5/31/16.
+//  Created by Rudy Bermudez on 6/19/16.
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
 import UIKit
 
-class StartPageViewController: UIViewController, UITextFieldDelegate{
-    
 
-    @IBOutlet weak var answerTextField: UITextField!
+class StartPageViewController: UIViewController {
+
+	// MARK: - Class Variables
+	private var singlePlayerDifficulty: Game.Difficulty?
+	private var foregroundNotification: NSObjectProtocol!
 	
-	@IBOutlet weak var difficultyControl: UISegmentedControl!
-    @IBAction func resignKeyboard(sender: UITextField) {
-        sender.resignFirstResponder()
-    }
-    
-    @IBOutlet weak var startButton: UIButton!
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        startButton.hidden = true;
-		difficultyControl.hidden = true;
-        self.answerTextField.delegate = self;
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-    }
+	// MARK: - IB Outlets/Actions
+	@IBOutlet weak var singlePlayerButton: UIButton!
+	
+	@IBAction func startSinglePlayerGame() {
+		let easyDifficulty = UIAlertAction(title: "Easy", style: .Default, handler: getDifficulty)
+		let mediumDifficulty = UIAlertAction(title: "Medium", style: .Default, handler: getDifficulty)
+		let hardDifficulty = UIAlertAction(title: "Hard", style: .Default, handler: getDifficulty)
+		let cancelAlert = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+		Game.showAlert(targetClass: self, title: "Please Choose a Difficulty", actionList: [easyDifficulty, mediumDifficulty,hardDifficulty, cancelAlert])
+	}
+	
+	// MARK: - Default Methods
+	override func viewDidLoad() {
+		super.viewDidLoad()
+		foregroundNotification = NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationWillEnterForegroundNotification, object: nil, queue: NSOperationQueue.mainQueue()) {
+			[unowned self] notification in
+			self.checkForInternetConnection()
+		}
+	}
+	
+	deinit {
+		NSNotificationCenter.defaultCenter().removeObserver(foregroundNotification)
+	}
+	
+	override func viewWillAppear(animated: Bool) {
+		super.viewWillAppear(animated)
+		navigationController?.setNavigationBarHidden(true, animated: animated)
+		checkForInternetConnection()
+	}
+	
+	override func didReceiveMemoryWarning() {
+		super.didReceiveMemoryWarning()
+	}
 	
 	override func prefersStatusBarHidden() -> Bool {
 		return true;
 	}
-    
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
-        if segue.identifier == "launchGameSegue" {
-            
-            if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
-                if !answer.isEmpty {
-					do {
-						guard let difficultyControlSegmentTitle = difficultyControl.titleForSegmentAtIndex(difficultyControl.selectedSegmentIndex),
-							let difficulty = Game.Difficulty(rawValue: difficultyControlSegmentTitle) else {
-							fatalError()
-						}
-						destination.game = try Game(answer: answer, difficulty: difficulty)
-						answerTextField.text = ""
-						startButton.hidden = true
-						difficultyControl.hidden = true
-					} catch Game.GameError.NotAValidWord {
-						showAlert(title: "Not a valid word. Try again")
-					} catch let error {
-						fatalError("\(error)")
-					}
-                }
-				else {
-					showAlert(title: "You must enter a word",message: "Field cannot be left blank")
-				}
-            }
-        }
-    }
-    
-    func textFieldShouldReturn(answerTextField: UITextField) -> Bool {
-        answerTextField.resignFirstResponder()
-        startButton.hidden = false
-		difficultyControl.hidden = false
-        return true
-    }
 	
-	func showAlert(title title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, action:UIAlertAction = UIAlertAction(title: "OK", style: .Default, handler: nil) ) {
-		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
-		alert.addAction(action)
-		presentViewController(alert, animated: true, completion: nil)
-	}
+	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+		if segue.identifier == "launchSinglePlayerGameSegue" {
+			if let destination = segue.destinationViewController as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
+				WordAPI.generateRandomWord({
+					word in
+					dispatch_async(dispatch_get_main_queue()) {
+						do {
+							print(word)
+							destination.game = try Game(answer: word, difficulty: singlePlayerDifficulty)
+							destination.updateDisplay()
+							destination.getDictionaryDefinition()
+							destination.hintButton.hidden = false
+							
+						} catch Game.GameError.NotAValidWord{
+							//FIXME: I am not quite sure if this is a valid fix to the problem. I want to generated another random word if the first has a space or special character
+							self.performSegueWithIdentifier("launchSinglePlayerGameSegue", sender: self)
+						} catch let error {
+							fatalError("\(error)")
+						}
+					}
+					
+				})
 
+			}
+			
+		}
+	}
+	
+	
+	func checkForInternetConnection() {
+		print("Checking Reachability")
+		if Reachability.isConnectedToNetwork() == true {
+			singlePlayerButton.hidden = false
+		} else {
+			singlePlayerButton.hidden = true
+			Game.showAlert(targetClass: self, title: "No Active Connection to Internet", message: "Single Player has been disabled")
+			
+		}
+	}
+	
+	
+	// MARK: - UIAlertAction Handlers
+	
+	func getDifficulty(sender: UIAlertAction) {
+		if let difficultyOption = sender.title, let game = Game.Difficulty(rawValue: difficultyOption){
+			singlePlayerDifficulty = game
+			performSegueWithIdentifier("launchSinglePlayerGameSegue", sender: self)
+		}
+		
+	}
+	
 }

@@ -12,8 +12,12 @@
 		472088CA1CFDE9E4005FF4F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472088C91CFDE9E4005FF4F8 /* Assets.xcassets */; };
 		472088CD1CFDE9E4005FF4F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 472088CB1CFDE9E4005FF4F8 /* LaunchScreen.storyboard */; };
 		472088D51CFDF114005FF4F8 /* Game.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472088D41CFDF114005FF4F8 /* Game.swift */; };
-		472088DA1CFE33A6005FF4F8 /* StartPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472088D91CFE33A6005FF4F8 /* StartPageViewController.swift */; };
+		472088DA1CFE33A6005FF4F8 /* TwoPlayerPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472088D91CFE33A6005FF4F8 /* TwoPlayerPageViewController.swift */; };
 		47751A331CFF3E8C008EE7D4 /* MainGame.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 47751A311CFF3E8C008EE7D4 /* MainGame.storyboard */; };
+		47DCEFBE1D1736F400647343 /* StartPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DCEFBD1D1736F400647343 /* StartPageViewController.swift */; };
+		47DCEFC21D17AD5D00647343 /* Reachability.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DCEFC11D17AD5D00647343 /* Reachability.swift */; };
+		47DCEFC41D17AEE200647343 /* WordAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DCEFC31D17AEE200647343 /* WordAPI.swift */; };
+		47DCEFC61D17C1D200647343 /* AboutPageViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47DCEFC51D17C1D200647343 /* AboutPageViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,8 +28,12 @@
 		472088CC1CFDE9E4005FF4F8 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		472088CE1CFDE9E4005FF4F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		472088D41CFDF114005FF4F8 /* Game.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Game.swift; sourceTree = "<group>"; };
-		472088D91CFE33A6005FF4F8 /* StartPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartPageViewController.swift; sourceTree = "<group>"; };
+		472088D91CFE33A6005FF4F8 /* TwoPlayerPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TwoPlayerPageViewController.swift; sourceTree = "<group>"; };
 		47751A321CFF3E8C008EE7D4 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainGame.storyboard; sourceTree = "<group>"; };
+		47DCEFBD1D1736F400647343 /* StartPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StartPageViewController.swift; sourceTree = "<group>"; };
+		47DCEFC11D17AD5D00647343 /* Reachability.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Reachability.swift; sourceTree = "<group>"; };
+		47DCEFC31D17AEE200647343 /* WordAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WordAPI.swift; sourceTree = "<group>"; };
+		47DCEFC51D17C1D200647343 /* AboutPageViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AboutPageViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,16 +66,44 @@
 		472088C11CFDE9E4005FF4F8 /* Hangman */ = {
 			isa = PBXGroup;
 			children = (
-				47751A311CFF3E8C008EE7D4 /* MainGame.storyboard */,
 				472088C21CFDE9E4005FF4F8 /* AppDelegate.swift */,
-				472088C41CFDE9E4005FF4F8 /* GameViewController.swift */,
-				472088D91CFE33A6005FF4F8 /* StartPageViewController.swift */,
+				47751A311CFF3E8C008EE7D4 /* MainGame.storyboard */,
 				472088C91CFDE9E4005FF4F8 /* Assets.xcassets */,
 				472088CB1CFDE9E4005FF4F8 /* LaunchScreen.storyboard */,
 				472088CE1CFDE9E4005FF4F8 /* Info.plist */,
-				472088D41CFDF114005FF4F8 /* Game.swift */,
+				47DCEFC71D1871DC00647343 /* APIs */,
+				47DCEFC01D17AD4200647343 /* ViewControllers */,
+				47DCEFBF1D17AD3B00647343 /* Models */,
 			);
 			path = Hangman;
+			sourceTree = "<group>";
+		};
+		47DCEFBF1D17AD3B00647343 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				472088D41CFDF114005FF4F8 /* Game.swift */,
+				47DCEFC11D17AD5D00647343 /* Reachability.swift */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		47DCEFC01D17AD4200647343 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				47DCEFBD1D1736F400647343 /* StartPageViewController.swift */,
+				472088D91CFE33A6005FF4F8 /* TwoPlayerPageViewController.swift */,
+				472088C41CFDE9E4005FF4F8 /* GameViewController.swift */,
+				47DCEFC51D17C1D200647343 /* AboutPageViewController.swift */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		47DCEFC71D1871DC00647343 /* APIs */ = {
+			isa = PBXGroup;
+			children = (
+				47DCEFC31D17AEE200647343 /* WordAPI.swift */,
+			);
+			name = APIs;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -142,10 +178,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				47DCEFBE1D1736F400647343 /* StartPageViewController.swift in Sources */,
 				472088C51CFDE9E4005FF4F8 /* GameViewController.swift in Sources */,
+				47DCEFC21D17AD5D00647343 /* Reachability.swift in Sources */,
+				47DCEFC41D17AEE200647343 /* WordAPI.swift in Sources */,
 				472088D51CFDF114005FF4F8 /* Game.swift in Sources */,
-				472088DA1CFE33A6005FF4F8 /* StartPageViewController.swift in Sources */,
+				472088DA1CFE33A6005FF4F8 /* TwoPlayerPageViewController.swift in Sources */,
 				472088C31CFDE9E4005FF4F8 /* AppDelegate.swift in Sources */,
+				47DCEFC61D17C1D200647343 /* AboutPageViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

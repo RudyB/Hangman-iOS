@@ -6,7 +6,7 @@
 //  Copyright © 2016 Rudy Bermudez. All rights reserved.
 //
 
-import Foundation
+import UIKit
 
 class Game {
 	var maxMisses:Int
@@ -41,6 +41,9 @@ class Game {
 				throw GameError.NotAValidWord
 			}
 		}
+//		if !UIReferenceLibraryViewController.dictionaryHasDefinitionForTerm(answer) {
+//			throw GameError.WordNotInDictionary(word: answer)
+//		}
 		return answer.lowercaseString
 	}
 	
@@ -95,6 +98,17 @@ class Game {
         }
         return wrongGuesses.uppercaseString;
     }
+	
+	
+	//MARK - : Helper View Controller Functions
+	
+	static func showAlert(targetClass targetClass:UIViewController, title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, actionList:[UIAlertAction] = [UIAlertAction(title: "OK", style: .Default, handler: nil)] ) {
+		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
+		for action in actionList {
+			alert.addAction(action)
+		}
+		targetClass.presentViewController(alert, animated: true, completion: nil)
+	}
     
 	// Exceptions
 	
@@ -102,6 +116,7 @@ class Game {
 		case LetterAlreadyGuessed(letter: String)
 		case CharacterIsNotLetter
 		case NotAValidWord
+		case WordNotInDictionary(word: String)
 	}
 	
 	// Difficulty
