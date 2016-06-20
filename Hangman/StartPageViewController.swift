@@ -55,30 +55,29 @@ class StartPageViewController: UIViewController {
 	
 	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
 		if segue.identifier == "launchSinglePlayerGameSegue" {
-			if let destination = segue.destinationViewController as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
-				WordAPI.generateRandomWord({
-					word in
-					dispatch_async(dispatch_get_main_queue()) {
-						do {
-							print(word)
-							destination.game = try Game(answer: word, difficulty: singlePlayerDifficulty)
-							destination.updateDisplay()
-							destination.getDictionaryDefinition()
-							destination.hintButton.hidden = false
-							
-						} catch Game.GameError.NotAValidWord{
-							//FIXME: I am not quite sure if this is a valid fix to the problem. I want to generated another random word if the first has a space or special character
-							self.performSegueWithIdentifier("launchSinglePlayerGameSegue", sender: self)
-						} catch let error {
-							fatalError("\(error)")
+			if Reachability.isConnectedToNetwork() == false {
+				Game.showAlert(targetClass: self, title: "No Connection to Internet", message: "Single Player is Disabled")
+			} else {
+				if let destination = segue.destinationViewController as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
+					WordAPI.generateRandomWord(wordDifficulty: singlePlayerDifficulty, completionHandler: {
+						word in
+						dispatch_async(dispatch_get_main_queue()) {
+							do {
+								print(word)
+								destination.game = try Game(answer: word, difficulty: singlePlayerDifficulty)
+								destination.updateDisplay()
+								destination.getDictionaryDefinition()
+								destination.hintButton.hidden = false
+								
+							} catch {
+								Game.showAlert(targetClass: self, title: "The Game Could Not Be Loaded",message: "Please Try Again")
+							}
 						}
-					}
-					
-				})
-
+					})
+				}
+			}
 			}
 			
-		}
 	}
 	
 	

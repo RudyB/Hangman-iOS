@@ -9,6 +9,7 @@
 import UIKit
 
 class Game {
+	// MARK: - Class Variables
 	var maxMisses:Int
     var answer:String
     var hits:String
@@ -21,7 +22,8 @@ class Game {
         self.misses = "";
 		self.maxMisses = difficulty.guesses()
     }
-    
+	
+	// MARK: - Class Functions
     func applyGuess(guess:String?) throws -> Bool?{
         guard let letter = try validateGuess(guess) else {
             return nil
@@ -41,9 +43,6 @@ class Game {
 				throw GameError.NotAValidWord
 			}
 		}
-//		if !UIReferenceLibraryViewController.dictionaryHasDefinitionForTerm(answer) {
-//			throw GameError.WordNotInDictionary(word: answer)
-//		}
 		return answer.lowercaseString
 	}
 	
@@ -100,7 +99,7 @@ class Game {
     }
 	
 	
-	//MARK - : Helper View Controller Functions
+	// MARK: - Helper View Controller Functions
 	
 	static func showAlert(targetClass targetClass:UIViewController, title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, actionList:[UIAlertAction] = [UIAlertAction(title: "OK", style: .Default, handler: nil)] ) {
 		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
@@ -110,7 +109,7 @@ class Game {
 		targetClass.presentViewController(alert, animated: true, completion: nil)
 	}
     
-	// Exceptions
+	// MARK: - Exceptions
 	
 	enum GameError: ErrorType {
 		case LetterAlreadyGuessed(letter: String)
@@ -119,7 +118,7 @@ class Game {
 		case WordNotInDictionary(word: String)
 	}
 	
-	// Difficulty
+	// MARK: - Difficulty
 	enum Difficulty: String {
 		case Easy
 		case Medium
@@ -133,6 +132,17 @@ class Game {
 				return 8
 			case .Hard:
 				return 6
+			}
+		}
+		
+		func corpusLevel() -> Int {
+			switch self {
+			case .Easy:
+				return 900000
+			case .Medium:
+				return 90000
+			case .Hard:
+				return 9000
 			}
 		}
 	}

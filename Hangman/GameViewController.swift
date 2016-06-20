@@ -109,8 +109,9 @@ class GameViewController: UIViewController {
 				} catch Game.GameError.CharacterIsNotLetter {
 					Game.showAlert(targetClass: self, title: "The guess must be a letter")
 				
-				} catch let error {
-					fatalError("\(error)")
+				} catch {
+					Game.showAlert(targetClass: self, title: "An unexpected error has occured")
+					self.navigationController?.popToRootViewControllerAnimated(true)
 				}
                 updateDisplay();
             }

@@ -17,8 +17,10 @@ class WordAPI {
 	static let API_KEY = "a2a73e7b926c924fad7001ca3111acd55af2ffabf50eb4ae5"
 	
 	
-	static func generateRandomWord(completionHandler: (word: String) -> ()) {
-		let requestURL: NSURL = NSURL(string: "https://api.wordnik.com/v4/words.json/randomWord?hasDictionaryDef=true&excludePartOfSpeech=family-name&minCorpusCount=9000&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=5&maxLength=-1&api_key=\(API_KEY)")!
+	static func generateRandomWord(wordDifficulty wordDifficulty: Game.Difficulty, completionHandler: (word: String) -> ()) {
+		
+		let corpusCount = wordDifficulty.corpusLevel()
+		let requestURL: NSURL = NSURL(string: "https://api.wordnik.com/v4/words.json/randomWord?hasDictionaryDef=true&excludePartOfSpeech=family-name&minCorpusCount=\(corpusCount)&maxCorpusCount=-1&minDictionaryCount=5&maxDictionaryCount=-1&minLength=5&maxLength=8&api_key=\(API_KEY)")!
 		let urlRequest: NSMutableURLRequest = NSMutableURLRequest(URL: requestURL)
 		let session = NSURLSession.sharedSession()
 		let task = session.dataTaskWithRequest(urlRequest){

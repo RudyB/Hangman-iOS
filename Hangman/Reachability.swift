@@ -25,4 +25,7 @@ public class Reachability {
 		let needsConnection = (flags.rawValue & UInt32(kSCNetworkFlagsConnectionRequired)) != 0
 		return (isReachable && !needsConnection)
 	}
+	enum ConnectivityErrors: ErrorType {
+		case NoActiveInternetConnection
+	}
 }
