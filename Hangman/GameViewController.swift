@@ -29,7 +29,7 @@ class GameViewController: UIViewController {
 	
 	@IBAction func hintButtonAction() {
 		hintLabel.hidden = false;
-		NSTimer.scheduledTimerWithTimeInterval(3, target: self, selector: #selector(self.hideHint), userInfo: nil, repeats: false)
+		NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(self.hideHint), userInfo: nil, repeats: false)
 	}
 
 	func hideHint(){

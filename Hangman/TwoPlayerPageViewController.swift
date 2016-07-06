@@ -43,7 +43,7 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
         if segue.identifier == "launchTwoPlayerGameSegue" {
             
             if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
-                if !answer.isEmpty {
+                if answer != "" {
 					do {
 						guard let difficultyControlSegmentTitle = difficultyControl.titleForSegmentAtIndex(difficultyControl.selectedSegmentIndex),
 							let difficulty = Game.Difficulty(rawValue: difficultyControlSegmentTitle) else {
