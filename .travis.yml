@@ -4,4 +4,4 @@ xcode_project: Hangman.xcodeproj
 xcode_scheme: HangmanBuild
 xcode_sdk: iphonesimulator9.3
 script:
-- xcodebuild clean build -project Hangman.xcodeproj -scheme HangmanBuild
+- xcodebuild clean build -project Hangman.xcodeproj -scheme HangmanBuild CODE_SIGNING_REQUIRED=NO
