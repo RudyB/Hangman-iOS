@@ -14,6 +14,7 @@ class Game {
     var answer:String
     var hits:String
     var misses:String
+	let difficulty: Game.Difficulty
 	static let validLetters = CharacterSet.letters
     
 	init(answer:String, difficulty:Difficulty) throws {
@@ -21,6 +22,7 @@ class Game {
         self.hits = "";
         self.misses = "";
 		self.maxMisses = difficulty.guesses()
+		self.difficulty = difficulty
     }
 	
 	// MARK: - Class Functions
@@ -38,12 +40,12 @@ class Game {
     }
 	
 	static func validateAnswer(answer: String) throws -> String {
-		for letter in answer.unicodeScalars {
+		for letter in answer.trim().unicodeScalars {
 			if !validLetters.contains(UnicodeScalar(letter.value)!) {
 				throw GameError.notAValidWord
 			}
 		}
-		return answer.lowercased()
+		return answer.trim().lowercased()
 	}
 	
 	

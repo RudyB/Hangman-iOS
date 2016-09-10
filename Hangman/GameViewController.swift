@@ -89,15 +89,30 @@ class GameViewController: UIViewController {
 	
 	func getDictionaryDefinition() {
 		if let game = game {
-			WordAPI.getDictionaryDefinition(wordToSearch: game.answer, completionHandler: {
-				definition in
-				DispatchQueue.main.async {
-					self.hintLabel.text = definition
-				}
-			})
+			if game.difficulty != .Hard {
+				
+				WordAPI.getDictionaryDefinition(wordToSearch: game.answer, completionHandler: { (definition, error) in
+					if error == nil {
+						DispatchQueue.main.async {
+							if let definition = definition {
+								self.hintLabel.text = definition
+								self.hintButton.isHidden = false
+							} else {
+								DispatchQueue.main.async {
+									self.hintButton.isHidden = true
+								}
+							}
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.hintButton.isHidden = true
+						}
+					}
+				})
+			}
 		}
 	}
-	
+
     func play(guess: String?){
         if let game = game {
             if game.getRemainingTries() > 0 && !game.isSolved() {

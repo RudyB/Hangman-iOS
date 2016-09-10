@@ -24,6 +24,7 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
         startButton.isHidden = true;
 		difficultyControl.isHidden = true;
         self.answerTextField.delegate = self;
+		self.answerTextField.becomeFirstResponder()
     }
 	
 	override func viewWillAppear(_ animated: Bool) {
@@ -50,6 +51,7 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
 							fatalError()
 						}
 						destination.game = try Game(answer: answer, difficulty: difficulty)
+						destination.getDictionaryDefinition()
 						answerTextField.text = ""
 						startButton.isHidden = true
 						difficultyControl.isHidden = true

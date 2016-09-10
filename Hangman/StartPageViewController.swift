@@ -59,25 +59,21 @@ class StartPageViewController: UIViewController {
 				Game.showAlert(targetClass: self, title: "No Connection to Internet", message: "Single Player is Disabled")
 			} else {
 				if let destination = segue.destination as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
-					WordAPI.generateRandomWord(wordDifficulty: singlePlayerDifficulty, completionHandler: {
+					WordAPI.downloadWord(wordDifficulty: singlePlayerDifficulty){
 						word in
 						DispatchQueue.main.async {
 							do {
-								print(word)
 								destination.game = try Game(answer: word, difficulty: singlePlayerDifficulty)
-								destination.updateDisplay()
 								destination.getDictionaryDefinition()
-								destination.hintButton.isHidden = false
-								
+								destination.updateDisplay()
 							} catch {
 								Game.showAlert(targetClass: self, title: "The Game Could Not Be Loaded",message: "Please Try Again")
 							}
 						}
-					})
+					}
 				}
 			}
-			}
-			
+		}
 	}
 	
 	
