@@ -51,7 +51,9 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
 							fatalError()
 						}
 						destination.game = try Game(answer: answer, difficulty: difficulty)
-						destination.getDictionaryDefinition()
+						if Reachability.isConnectedToNetwork() {
+							destination.getDictionaryDefinition()
+						}
 						answerTextField.text = ""
 						startButton.isHidden = true
 						difficultyControl.isHidden = true
