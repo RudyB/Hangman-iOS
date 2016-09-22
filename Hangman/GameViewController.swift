@@ -24,16 +24,16 @@ class GameViewController: UIViewController {
 	@IBOutlet weak var hintButton: UIButton!
     
     @IBAction func guessTextFieldAction() {
-        play(guessTextField.text)
+        play(guess: guessTextField.text)
     }
 	
 	@IBAction func hintButtonAction() {
-		hintLabel.hidden = false;
-		NSTimer.scheduledTimerWithTimeInterval(5, target: self, selector: #selector(self.hideHint), userInfo: nil, repeats: false)
+		hintLabel.isHidden = false;
+		Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.hideHint), userInfo: nil, repeats: false)
 	}
 
 	func hideHint(){
-		hintLabel.hidden = true
+		hintLabel.isHidden = true
 	}
 
 	// MARK: - Default Methods
@@ -41,7 +41,7 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
     }
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.setNavigationBarHidden(true, animated: animated)
 		initializeView()
@@ -52,28 +52,28 @@ class GameViewController: UIViewController {
         super.didReceiveMemoryWarning()
     }
     
-    override func prefersStatusBarHidden() -> Bool {
+    override var prefersStatusBarHidden : Bool {
         return true;
     }
 	
 	// MARK: - Class Methods
 	
 	func initializeView() {
-		hintLabel.hidden = true
+		hintLabel.isHidden = true
 		currentStatusLabel.text = "Loading Word"
 		incorrectGuessesLabel.text = ""
 		guessesRemainingLabel.text = ""
-		guessTextField.enabled = false
-		guessesRemainingTitle.hidden = true
+		guessTextField.isEnabled = false
+		guessesRemainingTitle.isHidden = true
 		updateDisplay()
 	}
 	
     func updateDisplay() -> () {
         if let game = game {
-			guessTextField.enabled = true
-			guessesRemainingTitle.hidden = false
+			guessTextField.isEnabled = true
+			guessesRemainingTitle.isHidden = false
             if game.getMisses() != "" {
-                incorrectGuessesTitle.hidden = false;
+                incorrectGuessesTitle.isHidden = false;
             }
             incorrectGuessesLabel.text = game.getMisses();
             currentStatusLabel.text = game.getCurrentProgress();
@@ -83,39 +83,54 @@ class GameViewController: UIViewController {
         
     }
     
-	func startNewGame(sender: UIAlertAction) {
-        navigationController?.popToRootViewControllerAnimated(true)
+	func startNewGame(_ sender: UIAlertAction) {
+        navigationController?.popToRootViewController(animated: true)
     }
 	
 	func getDictionaryDefinition() {
 		if let game = game {
-			WordAPI.getDictionaryDefinition(wordToSearch: game.answer, completionHandler: {
-				definition in
-				dispatch_async(dispatch_get_main_queue()) {
-					self.hintLabel.text = definition
-				}
-			})
+			if game.difficulty != .Hard {
+				
+				WordAPI.getDictionaryDefinition(wordToSearch: game.answer, completionHandler: { (definition, error) in
+					if error == nil {
+						DispatchQueue.main.async {
+							if let definition = definition {
+								self.hintLabel.text = definition
+								self.hintButton.isHidden = false
+							} else {
+								DispatchQueue.main.async {
+									self.hintButton.isHidden = true
+								}
+							}
+						}
+					} else {
+						DispatchQueue.main.async {
+							self.hintButton.isHidden = true
+						}
+					}
+				})
+			}
 		}
 	}
-	
+
     func play(guess: String?){
         if let game = game {
             if game.getRemainingTries() > 0 && !game.isSolved() {
 				do {
-					try game.applyGuess(guess)
-				} catch Game.GameError.LetterAlreadyGuessed(let letter) {
+					try game.applyGuess(guess: guess)
+				} catch Game.GameError.letterAlreadyGuessed(let letter) {
 					Game.showAlert(targetClass: self, title: "The letter '\(letter)' has already been guessed")
 				
-				} catch Game.GameError.CharacterIsNotLetter {
+				} catch Game.GameError.characterIsNotLetter {
 					Game.showAlert(targetClass: self, title: "The guess must be a letter")
 				
 				} catch {
 					Game.showAlert(targetClass: self, title: "An unexpected error has occured")
-					self.navigationController?.popToRootViewControllerAnimated(true)
+					self.navigationController?.popToRootViewController(animated: true)
 				}
                 updateDisplay();
             }
-            let newGameAction = UIAlertAction(title: "New Game", style: .Default, handler: startNewGame)
+            let newGameAction = UIAlertAction(title: "New Game", style: .default, handler: startNewGame)
 			
             if !game.isSolved() && game.getRemainingTries() <= 0 {
 				guessTextField.resignFirstResponder()

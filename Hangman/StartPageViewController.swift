@@ -12,34 +12,34 @@ import UIKit
 class StartPageViewController: UIViewController {
 
 	// MARK: - Class Variables
-	private var singlePlayerDifficulty: Game.Difficulty?
-	private var foregroundNotification: NSObjectProtocol!
+	fileprivate var singlePlayerDifficulty: Game.Difficulty?
+	fileprivate var foregroundNotification: NSObjectProtocol!
 	
 	// MARK: - IB Outlets/Actions
 	@IBOutlet weak var singlePlayerButton: UIButton!
 	
 	@IBAction func startSinglePlayerGame() {
-		let easyDifficulty = UIAlertAction(title: "Easy", style: .Default, handler: getDifficulty)
-		let mediumDifficulty = UIAlertAction(title: "Medium", style: .Default, handler: getDifficulty)
-		let hardDifficulty = UIAlertAction(title: "Hard", style: .Default, handler: getDifficulty)
-		let cancelAlert = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+		let easyDifficulty = UIAlertAction(title: "Easy", style: .default, handler: getDifficulty)
+		let mediumDifficulty = UIAlertAction(title: "Medium", style: .default, handler: getDifficulty)
+		let hardDifficulty = UIAlertAction(title: "Hard", style: .default, handler: getDifficulty)
+		let cancelAlert = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
 		Game.showAlert(targetClass: self, title: "Please Choose a Difficulty", actionList: [easyDifficulty, mediumDifficulty,hardDifficulty, cancelAlert])
 	}
 	
 	// MARK: - Default Methods
 	override func viewDidLoad() {
 		super.viewDidLoad()
-		foregroundNotification = NSNotificationCenter.defaultCenter().addObserverForName(UIApplicationWillEnterForegroundNotification, object: nil, queue: NSOperationQueue.mainQueue()) {
+		foregroundNotification = NotificationCenter.default.addObserver(forName: NSNotification.Name.UIApplicationWillEnterForeground, object: nil, queue: OperationQueue.main) {
 			[unowned self] notification in
 			self.checkForInternetConnection()
 		}
 	}
 	
 	deinit {
-		NSNotificationCenter.defaultCenter().removeObserver(foregroundNotification)
+		NotificationCenter.default.removeObserver(foregroundNotification)
 	}
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.setNavigationBarHidden(true, animated: animated)
 		checkForInternetConnection()
@@ -49,44 +49,40 @@ class StartPageViewController: UIViewController {
 		super.didReceiveMemoryWarning()
 	}
 	
-	override func prefersStatusBarHidden() -> Bool {
+	override var prefersStatusBarHidden : Bool {
 		return true;
 	}
 	
-	override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+	override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
 		if segue.identifier == "launchSinglePlayerGameSegue" {
 			if Reachability.isConnectedToNetwork() == false {
 				Game.showAlert(targetClass: self, title: "No Connection to Internet", message: "Single Player is Disabled")
 			} else {
-				if let destination = segue.destinationViewController as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
-					WordAPI.generateRandomWord(wordDifficulty: singlePlayerDifficulty, completionHandler: {
+				if let destination = segue.destination as? GameViewController, let singlePlayerDifficulty = singlePlayerDifficulty  {
+					WordAPI.downloadWord(wordDifficulty: singlePlayerDifficulty){
 						word in
-						dispatch_async(dispatch_get_main_queue()) {
+						DispatchQueue.main.async {
 							do {
-								print(word)
 								destination.game = try Game(answer: word, difficulty: singlePlayerDifficulty)
-								destination.updateDisplay()
 								destination.getDictionaryDefinition()
-								destination.hintButton.hidden = false
-								
+								destination.updateDisplay()
 							} catch {
 								Game.showAlert(targetClass: self, title: "The Game Could Not Be Loaded",message: "Please Try Again")
 							}
 						}
-					})
+					}
 				}
 			}
-			}
-			
+		}
 	}
 	
 	
 	func checkForInternetConnection() {
 		print("Checking Reachability")
 		if Reachability.isConnectedToNetwork() == true {
-			singlePlayerButton.hidden = false
+			singlePlayerButton.isHidden = false
 		} else {
-			singlePlayerButton.hidden = true
+			singlePlayerButton.isHidden = true
 			Game.showAlert(targetClass: self, title: "No Active Connection to Internet", message: "Single Player has been disabled")
 			
 		}
@@ -95,10 +91,10 @@ class StartPageViewController: UIViewController {
 	
 	// MARK: - UIAlertAction Handlers
 	
-	func getDifficulty(sender: UIAlertAction) {
+	func getDifficulty(_ sender: UIAlertAction) {
 		if let difficultyOption = sender.title, let game = Game.Difficulty(rawValue: difficultyOption){
 			singlePlayerDifficulty = game
-			performSegueWithIdentifier("launchSinglePlayerGameSegue", sender: self)
+			performSegue(withIdentifier: "launchSinglePlayerGameSegue", sender: self)
 		}
 		
 	}

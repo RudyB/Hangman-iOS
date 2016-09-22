@@ -14,19 +14,20 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
     @IBOutlet weak var answerTextField: UITextField!
 	@IBOutlet weak var startButton: UIButton!
 	@IBOutlet weak var difficultyControl: UISegmentedControl!
-    @IBAction func resignKeyboard(sender: UITextField) {
+    @IBAction func resignKeyboard(_ sender: UITextField) {
         sender.resignFirstResponder()
     }
     
 	// MARK: - Default Methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        startButton.hidden = true;
-		difficultyControl.hidden = true;
+        startButton.isHidden = true;
+		difficultyControl.isHidden = true;
         self.answerTextField.delegate = self;
+		self.answerTextField.becomeFirstResponder()
     }
 	
-	override func viewWillAppear(animated: Bool) {
+	override func viewWillAppear(_ animated: Bool) {
 		super.viewWillAppear(animated)
 		navigationController?.setNavigationBarHidden(false, animated: animated)
 	}
@@ -35,27 +36,30 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
         super.didReceiveMemoryWarning()
     }
 	
-	override func prefersStatusBarHidden() -> Bool {
+	override var prefersStatusBarHidden : Bool {
 		return true;
 	}
 	
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "launchTwoPlayerGameSegue" {
             
-            if let destination = segue.destinationViewController as? GameViewController, let answer = answerTextField.text {
+            if let destination = segue.destination as? GameViewController, let answer = answerTextField.text {
                 if answer != "" {
 					do {
-						guard let difficultyControlSegmentTitle = difficultyControl.titleForSegmentAtIndex(difficultyControl.selectedSegmentIndex),
+						guard let difficultyControlSegmentTitle = difficultyControl.titleForSegment(at: difficultyControl.selectedSegmentIndex),
 							let difficulty = Game.Difficulty(rawValue: difficultyControlSegmentTitle) else {
 							fatalError()
 						}
 						destination.game = try Game(answer: answer, difficulty: difficulty)
+						if Reachability.isConnectedToNetwork() {
+							destination.getDictionaryDefinition()
+						}
 						answerTextField.text = ""
-						startButton.hidden = true
-						difficultyControl.hidden = true
-					} catch Game.GameError.NotAValidWord {
+						startButton.isHidden = true
+						difficultyControl.isHidden = true
+					} catch Game.GameError.notAValidWord {
 						Game.showAlert(targetClass: self, title: "Not a valid word. Try again")
-					} catch Game.GameError.WordNotInDictionary(let word) {
+					} catch Game.GameError.wordNotInDictionary(let word) {
 						Game.showAlert(targetClass: self, title: "\(word) is not in the dictionary. Try again")
 					} catch let error {
 						fatalError("\(error)")
@@ -68,10 +72,10 @@ class TwoPlayerPageViewController: UIViewController, UITextFieldDelegate{
         }
     }
     
-    func textFieldShouldReturn(answerTextField: UITextField) -> Bool {
+    func textFieldShouldReturn(_ answerTextField: UITextField) -> Bool {
         answerTextField.resignFirstResponder()
-        startButton.hidden = false
-		difficultyControl.hidden = false
+        startButton.isHidden = false
+		difficultyControl.isHidden = false
         return true
     }
 	

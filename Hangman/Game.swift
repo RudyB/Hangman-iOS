@@ -14,18 +14,20 @@ class Game {
     var answer:String
     var hits:String
     var misses:String
-	static let validLetters = NSCharacterSet.letterCharacterSet()
+	let difficulty: Game.Difficulty
+	static let validLetters = CharacterSet.letters
     
 	init(answer:String, difficulty:Difficulty) throws {
-        self.answer = try Game.validateAnswer(answer);
+        self.answer = try Game.validateAnswer(answer: answer);
         self.hits = "";
         self.misses = "";
 		self.maxMisses = difficulty.guesses()
+		self.difficulty = difficulty
     }
 	
 	// MARK: - Class Functions
     func applyGuess(guess:String?) throws -> Bool?{
-        guard let letter = try validateGuess(guess) else {
+        guard let letter = try validateGuess(guess: guess) else {
             return nil
         }
         let isHit = answer.characters.contains(letter)
@@ -38,12 +40,12 @@ class Game {
     }
 	
 	static func validateAnswer(answer: String) throws -> String {
-		for letter in answer.unicodeScalars {
-			if !validLetters.longCharacterIsMember(letter.value) {
-				throw GameError.NotAValidWord
+		for letter in answer.trim().unicodeScalars {
+			if !validLetters.contains(UnicodeScalar(letter.value)!) {
+				throw GameError.notAValidWord
 			}
 		}
-		return answer.lowercaseString
+		return answer.trim().lowercased()
 	}
 	
 	
@@ -52,10 +54,10 @@ class Game {
             return nil;
         }
 		
-        if (!Game.validLetters.longCharacterIsMember(firstLetter.value)) {
-            throw GameError.CharacterIsNotLetter
+        if (!Game.validLetters.contains(UnicodeScalar(firstLetter.value)!)) {
+            throw GameError.characterIsNotLetter
         } else if (misses.characters.contains(firstCharacter) || hits.characters.contains(firstCharacter)) {
-			throw GameError.LetterAlreadyGuessed(letter: String(firstCharacter))
+			throw GameError.letterAlreadyGuessed(letter: String(firstCharacter))
         }
 		return firstCharacter
 
@@ -95,27 +97,27 @@ class Game {
         for letter in misses.characters {
             wrongGuesses += String(letter) + " ";
         }
-        return wrongGuesses.uppercaseString;
+        return wrongGuesses.uppercased();
     }
 	
 	
 	// MARK: - Helper View Controller Functions
 	
-	static func showAlert(targetClass targetClass:UIViewController, title: String, message: String? = nil, style: UIAlertControllerStyle = .Alert, actionList:[UIAlertAction] = [UIAlertAction(title: "OK", style: .Default, handler: nil)] ) {
+	static func showAlert(targetClass:UIViewController, title: String, message: String? = nil, style: UIAlertControllerStyle = .alert, actionList:[UIAlertAction] = [UIAlertAction(title: "OK", style: .default, handler: nil)] ) {
 		let alert = UIAlertController(title: title, message: message, preferredStyle: style)
 		for action in actionList {
 			alert.addAction(action)
 		}
-		targetClass.presentViewController(alert, animated: true, completion: nil)
+		targetClass.present(alert, animated: true, completion: nil)
 	}
     
 	// MARK: - Exceptions
 	
-	enum GameError: ErrorType {
-		case LetterAlreadyGuessed(letter: String)
-		case CharacterIsNotLetter
-		case NotAValidWord
-		case WordNotInDictionary(word: String)
+	enum GameError: Error {
+		case letterAlreadyGuessed(letter: String)
+		case characterIsNotLetter
+		case notAValidWord
+		case wordNotInDictionary(word: String)
 	}
 	
 	// MARK: - Difficulty
